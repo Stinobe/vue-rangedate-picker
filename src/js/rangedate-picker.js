@@ -133,7 +133,7 @@ export default {
     },
     shortDays: {
       type: Array,
-      default: () => null
+      default: () => availableShortDays[this.i18n]
     },
     // options for captions are: title, ok_button
     captions: {
@@ -142,7 +142,7 @@ export default {
     },
     firstDay: {
       type: Number,
-      default: 0
+      default: 1
     },
     format: {
       type: String,
@@ -210,16 +210,18 @@ export default {
       return this.months || availableMonths[this.i18n]
     },
     shortDaysLocale: function () {
-      return this.shortDays || availableShortDays[this.i18n]
+      let shortDaysTemp = this.shortDays || availableShortDays[this.i18n]
+      shortDaysTemp = [...shortDaysTemp.slice(this.firstDay, this.numOfDays), ...shortDaysTemp.slice(0, this.firstDay)]
+      return shortDaysTemp
     },
     s: function () {
       return Object.assign({}, defaultStyle, this.style)
     },
     startMonthDay: function () {
-      return new Date(this.activeYearStart, this.activeMonthStart, 1).getDay()
+      return new Date(this.activeYearStart, this.activeMonthStart, 1).getDay() + (this.numOfDays - (this.numOfDays + this.firstDay))
     },
     startNextMonthDay: function () {
-      return new Date(this.activeYearEnd, this.startNextActiveMonth, 1).getDay()
+      return new Date(this.activeYearEnd, this.startNextActiveMonth, 1).getDay() + (this.numOfDays - (this.numOfDays + this.firstDay))
     },
     endMonthDate: function () {
       return new Date(this.activeYearStart, this.startNextActiveMonth, 0).getDate()
