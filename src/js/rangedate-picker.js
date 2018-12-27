@@ -218,10 +218,10 @@ export default {
       return new Date(this.activeYearStart, this.activeMonthStart, 1).getDay()
     },
     startNextMonthDay: function () {
-      return new Date(this.activeYearStart, this.startNextActiveMonth, 1).getDay()
+      return new Date(this.activeYearEnd, this.startNextActiveMonth, 1).getDay()
     },
     endMonthDate: function () {
-      return new Date(this.activeYearEnd, this.startNextActiveMonth, 0).getDate()
+      return new Date(this.activeYearStart, this.startNextActiveMonth, 0).getDate()
     },
     endNextMonthDate: function () {
       return new Date(this.activeYearEnd, this.activeMonthStart + 2, 0).getDate()
@@ -298,8 +298,7 @@ export default {
     },
     selectFirstItem(r, i) {
       const result = this.getDayIndexInMonth(r, i, this.startMonthDay) + 1
-      this.dateRange = Object.assign({}, this.dateRange, this.getNewDateRange(result, this.activeMonthStart,
-        this.activeYearStart))
+      this.dateRange = Object.assign({}, this.dateRange, this.getNewDateRange(result, this.activeMonthStart, this.activeYearStart))
       if (this.dateRange.start && this.dateRange.end) {
         this.presetActive = ''
         if (this.isCompact) {
@@ -364,7 +363,7 @@ export default {
       // update start active month
       this.activeMonthStart = this.dateRange.start.getMonth()
       this.activeYearStart = this.dateRange.start.getFullYear()
-      this.activeYearEnd = this.dateRange.end.getFullYear()
+      this.activeYearEnd = (this.dateRange.start.getMonth() >= 11 && this.dateRange.end.getDate() < 31) ? this.dateRange.start.getFullYear() + 1 : this.dateRange.end.getFullYear()
     },
     setDateValue: function () {
       this.$emit('selected', this.dateRange)
