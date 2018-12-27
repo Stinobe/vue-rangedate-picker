@@ -187,7 +187,8 @@ export default {
       showMonth: false,
       activeMonthStart: this.startActiveMonth,
       activeYearStart: this.startActiveYear,
-      activeYearEnd: this.startActiveYear
+      activeYearEnd: this.startActiveYear,
+      lastSelectedRange: this.initRange
     }
   },
   created() {
@@ -254,6 +255,11 @@ export default {
       if (this.isCompact) {
         this.showMonth = !this.showMonth
         return
+      }
+      if (!this.isOpen) {
+        this.lastSelectedRange = this.dateRange;
+      } else {
+        this.dateRange = this.lastSelectedRange;
       }
       this.isOpen = !this.isOpen
       this.showMonth = !this.showMonth
@@ -368,6 +374,7 @@ export default {
     setDateValue: function () {
       this.$emit('selected', this.dateRange)
       if (!this.isCompact) {
+        this.lastSelectedRange = this.dateRange;
         this.toggleCalendar()
       }
     }
