@@ -1,17 +1,15 @@
 import fecha from 'fecha'
 
 const defaultConfig = {}
-const defaultI18n = 'ID'
+const defaultI18n = 'EN'
 const availableMonths = {
-  EN: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November',
-    'December'],
-  ID: ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November',
-    'Desember']
+  EN: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
+  NL: ['Januari', 'Februari', 'Maart', 'April', 'Mei', 'Juni', 'Juli', 'Augustus', 'September', 'Oktober', 'November', 'December']
 }
 
 const availableShortDays = {
   EN: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
-  ID: ['Min', 'Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab']
+  NL: ['Zo', 'Ma', 'Di', 'Woe', 'Do', 'Vr', 'Za']
 }
 
 const presetRangeLabel = {
@@ -22,18 +20,19 @@ const presetRangeLabel = {
     lastSevenSays: 'Last 7 Days',
     lastThirtyDays: 'Last 30 Days'
   },
-  ID: {
-    today: 'Hari ini',
-    thisMonth: 'Bulan ini',
-    lastMonth: 'Bulan lalu',
-    lastSevenDays: '7 Hari Terakhir',
-    lastThirtyDays: '30 Hari Terakhir'
+  NL: {
+    today: 'Vandaag',
+    thisMonth: 'Deze maand',
+    lastMonth: 'Voorbije maand',
+    lastSevenDays: 'Laatste 7 dagen',
+    lastThirtyDays: 'Laatste 30 dagen'
   }
 }
 
 const defaultCaptions = {
   'title': 'Choose Dates',
-  'ok_button': 'Apply'
+  'ok_button': 'Apply',
+  'placeholder': 'Choose date'
 }
 
 const defaultStyle = {
@@ -141,6 +140,10 @@ export default {
       type: Object,
       default: () => defaultCaptions
     },
+    firstDay: {
+      type: Number,
+      default: 0
+    },
     format: {
       type: String,
       default: 'DD MMM YYYY'
@@ -174,7 +177,7 @@ export default {
       default: 'false'
     }
   },
-  data () {
+  data() {
     return {
       dateRange: {},
       numOfDays: 7,
@@ -187,7 +190,7 @@ export default {
       activeYearEnd: this.startActiveYear
     }
   },
-  created () {
+  created() {
     if (this.isCompact) {
       this.isOpen = true
     }
@@ -264,12 +267,12 @@ export default {
       const date = (this.numOfDays * (r - 1)) + i
       return date - startMonthDay
     },
-    getDayCell (r, i, startMonthDay, endMonthDate) {
+    getDayCell(r, i, startMonthDay, endMonthDate) {
       const result = this.getDayIndexInMonth(r, i, startMonthDay)
       // bound by > 0 and < last day of month
       return result > 0 && result <= endMonthDate ? result : '&nbsp;'
     },
-    getNewDateRange (result, activeMonth, activeYear) {
+    getNewDateRange(result, activeMonth, activeYear) {
       const newData = {}
       let key = 'start'
       if (!this.isFirstChoice) {
@@ -280,7 +283,9 @@ export default {
       const resultDate = new Date(activeYear, activeMonth, result)
       if (!this.isFirstChoice && resultDate < this.dateRange.start) {
         this.isFirstChoice = false
-        return { start: resultDate }
+        return {
+          start: resultDate
+        }
       }
 
       // toggle first choice
@@ -288,10 +293,10 @@ export default {
       newData[key] = resultDate
       return newData
     },
-    selectFirstItem (r, i) {
+    selectFirstItem(r, i) {
       const result = this.getDayIndexInMonth(r, i, this.startMonthDay) + 1
       this.dateRange = Object.assign({}, this.dateRange, this.getNewDateRange(result, this.activeMonthStart,
-      this.activeYearStart))
+        this.activeYearStart))
       if (this.dateRange.start && this.dateRange.end) {
         this.presetActive = ''
         if (this.isCompact) {
@@ -299,15 +304,15 @@ export default {
         }
       }
     },
-    selectSecondItem (r, i) {
+    selectSecondItem(r, i) {
       const result = this.getDayIndexInMonth(r, i, this.startNextMonthDay) + 1
       this.dateRange = Object.assign({}, this.dateRange, this.getNewDateRange(result, this.startNextActiveMonth,
-      this.activeYearEnd))
+        this.activeYearEnd))
       if (this.dateRange.start && this.dateRange.end) {
         this.presetActive = ''
       }
     },
-    isDateSelected (r, i, key, startMonthDay, endMonthDate) {
+    isDateSelected(r, i, key, startMonthDay, endMonthDate) {
       const result = this.getDayIndexInMonth(r, i, startMonthDay) + 1
       if (result < 2 || result > endMonthDate + 1) return false
 
@@ -320,7 +325,7 @@ export default {
       return (this.dateRange.start && this.dateRange.start.getTime() === currDate.getTime()) ||
         (this.dateRange.end && this.dateRange.end.getTime() === currDate.getTime())
     },
-    isDateInRange (r, i, key, startMonthDay, endMonthDate) {
+    isDateInRange(r, i, key, startMonthDay, endMonthDate) {
       const result = this.getDayIndexInMonth(r, i, startMonthDay) + 1
       if (result < 2 || result > endMonthDate + 1) return false
 
@@ -333,24 +338,24 @@ export default {
       return (this.dateRange.start && this.dateRange.start.getTime() < currDate.getTime()) &&
         (this.dateRange.end && this.dateRange.end.getTime() > currDate.getTime())
     },
-    isDateDisabled (r, i, startMonthDay, endMonthDate) {
+    isDateDisabled(r, i, startMonthDay, endMonthDate) {
       const result = this.getDayIndexInMonth(r, i, startMonthDay)
       // bound by > 0 and < last day of month
       return !(result > 0 && result <= endMonthDate)
     },
-    goPrevMonth () {
+    goPrevMonth() {
       const prevMonth = new Date(this.activeYearStart, this.activeMonthStart, 0)
       this.activeMonthStart = prevMonth.getMonth()
       this.activeYearStart = prevMonth.getFullYear()
       this.activeYearEnd = prevMonth.getFullYear()
     },
-    goNextMonth () {
+    goNextMonth() {
       const nextMonth = new Date(this.activeYearEnd, this.startNextActiveMonth, 1)
       this.activeMonthStart = nextMonth.getMonth()
       this.activeYearStart = nextMonth.getFullYear()
       this.activeYearEnd = nextMonth.getFullYear()
     },
-    updatePreset (item) {
+    updatePreset(item) {
       this.presetActive = item.label
       this.dateRange = item.dateRange
       // update start active month
